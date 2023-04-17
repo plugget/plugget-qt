@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+#build-backend = "setuptools.build_meta"
+
+
+[tool.setuptools]
+packages = ["plugget_search_widget"]
+
+
+[project]
+name = "plugget-search-widget"
+authors = [
+    {name = "Hannes"},
+]
+description = "a qt widget to search for plugget packages"
+readme = "README.md"
+requires-python = ">=3.4"
+keywords = ["dcc", "pipeline", "qt", "widget", "plugget", "package", "manifest", "search", "installer"]
+#license = { file = "LICENSE" }
+classifiers = [
+    "Programming Language :: Python :: 3.4",
+]
+dependencies = [
+    'importlib-metadata; python_version<"3.4"',
+]
+#dynamic = ["version"]
+version = "0.0.1"
+
+#[project.optional-dependencies]
+#yaml = ["pyyaml"]
+
+#[project.scripts]
+#my-script = "my_package.module:function"
+
+
+[project.urls]
+Homepage = "https://github.com/hannesdelbeke/plugget-qt-search"
+Documentation = "https://github.com/hannesdelbeke/plugget-qt-search"
