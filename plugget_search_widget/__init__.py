@@ -35,6 +35,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # Create the UI elements
         self.search_field = QtWidgets.QLineEdit()
         self.search_field.returnPressed.connect(self.search_packages)
+        self.search_field.setPlaceholderText("Search packages")
+
+        self.search_text = QtWidgets.QLabel("")
 
         self.package_layout = QtWidgets.QVBoxLayout()
         self.package_scroll_area = QtWidgets.QScrollArea()
@@ -47,6 +50,7 @@ class MainWindow(QtWidgets.QMainWindow):
         central_widget = QtWidgets.QWidget()
         central_layout = QtWidgets.QVBoxLayout(central_widget)
         central_layout.addWidget(self.search_field)
+        central_layout.addWidget(self.search_text)
         central_layout.addWidget(self.package_scroll_area)
         self.setCentralWidget(central_widget)
 
@@ -57,7 +61,11 @@ class MainWindow(QtWidgets.QMainWindow):
             widget.setParent(None)
 
         # Search for packages and create widgets for each result
-        results = cmd.search(self.search_field.text())
+        input = self.search_field.text()
+        self.search_text.setText(f"Searching for '{input}':")
+        QtWidgets.QApplication.processEvents()
+        results = cmd.search(input)
+        self.search_text.setText(f"Found {len(results)} results for '{input}':")
         for package in results:
             package_widget = PackageWidget(package)
             self.package_layout.addWidget(package_widget)
