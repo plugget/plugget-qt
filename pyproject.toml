@@ -22,12 +22,17 @@ classifiers = [
 ]
 dependencies = [
     'importlib-metadata; python_version<"3.4"',
+    'plugget',
+    'PySide2',
 ]
-#dynamic = ["version"]
+
+# dynamic = ["version"]
 version = "0.0.1"
 
-#[project.optional-dependencies]
-#yaml = ["pyyaml"]
+# [project.optional-dependencies]
+# pyside2 = ["PySide2"]
+
+
 
 #[project.scripts]
 #my-script = "my_package.module:function"
