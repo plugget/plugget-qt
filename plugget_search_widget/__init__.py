@@ -56,9 +56,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def search_packages(self):
         # Clear the existing package widgets
-        for i in reversed(range(self.package_layout.count())):
+        count = self.package_layout.count()
+        print(count)
+        for i in reversed(range(count)):
             widget = self.package_layout.itemAt(i).widget()
-            widget.setParent(None)
+            if widget:
+                widget.setParent(None)
+            else:
+                logging.warning(f"widget None, index {i}")
+        # todo this is a hack for second search, fix it
 
         # Search for packages and create widgets for each result
         input = self.search_field.text()
