@@ -77,8 +77,17 @@ class MainWindow(QtWidgets.QMainWindow):
             self.package_layout.addWidget(package_widget)
         self.package_layout.addStretch()
 
+if __name__ == "__main__":
+    app = QtWidgets.QApplication.instance()
+    
+    exec = False
+    if not app:
+        exec = True
+        app = QtWidgets.QApplication()
 
-app = QtWidgets.QApplication.instance
-window = MainWindow()
-window.show()
+    window = MainWindow()
+    window.show()
+
+    if exec:
+        app.exec_()
 
