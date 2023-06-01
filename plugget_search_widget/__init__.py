@@ -4,6 +4,7 @@
 
 import PySide2.QtWidgets as QtWidgets
 import plugget.commands as cmd
+import logging
 
 
 class PackageWidget(QtWidgets.QWidget):
