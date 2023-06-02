@@ -10,6 +10,7 @@ import logging
 INSTALLED = "Installed"
 INSTALL = "Install"
 NOT_INSTALLED = "Not installed"
+UNINSTALL = "Uninstall"
 
 
 class PackageWidget(QtWidgets.QWidget):
@@ -55,7 +56,13 @@ class PackageWidget(QtWidgets.QWidget):
     def version_changed(self, version):
         # disable install button if version is installed
         installed = self.package_meta.get_version(version).is_installed
-        self.install_button.setEnabled(not installed)
+        if installed:
+            self.install_button.setText(UNINSTALL)
+            self.install_button.setStyleSheet("background-color: red;")
+        else:
+            self.install_button.setText(INSTALL)
+            self.install_button.setStyleSheet("background-color: none;")
+
 
 
 class MainWindow(QtWidgets.QMainWindow):
