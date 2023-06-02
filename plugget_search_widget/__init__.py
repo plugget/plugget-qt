@@ -7,25 +7,55 @@ import plugget.commands as cmd
 import logging
 
 
+INSTALLED = "Installed"
+INSTALL = "Install"
+NOT_INSTALLED = "Not installed"
+
+
 class PackageWidget(QtWidgets.QWidget):
-    def __init__(self, package, parent=None):
+    def __init__(self, packageMeta, parent=None):
         super().__init__(parent)
-        self.package = package
+        self.package_meta = packageMeta
 
         # Create the UI elements
-        self.name_label = QtWidgets.QLabel(self.package.package_name)
-        self.version_label = QtWidgets.QLabel(self.package.version)
+        self.name_label = QtWidgets.QLabel(self.package_meta.package_name)
+
+        if self.package_meta.installed_package:
+            version = self.package_meta.installed_package.version
+        else:
+            version = NOT_INSTALLED
+        self.version_label = QtWidgets.QLabel(version)
+
+        # dropdown with all versions
+        versions = self.package_meta.versions
+        self.version_dropdown = QtWidgets.QComboBox()
+        self.version_dropdown.addItems(versions)
+        # connect
+        self.version_dropdown.currentTextChanged.connect(self.version_changed)
+
         self.install_button = QtWidgets.QPushButton("Install")
         self.install_button.clicked.connect(self.install_package)
+        self.version_changed(self.version_dropdown.currentText())  # init state
 
         # Lay out the elements horizontally
         layout = QtWidgets.QHBoxLayout(self)
         layout.addWidget(self.name_label)
         layout.addWidget(self.version_label)
+        layout.addWidget(self.version_dropdown)
         layout.addWidget(self.install_button)
 
+        # todo
+        # show version dropwon
+        # show app
+
+
     def install_package(self):
-        cmd.install(self.package.package_name)
+        cmd.install(self.package_meta.package_name)
+
+    def version_changed(self, version):
+        # disable install button if version is installed
+        installed = self.package_meta.get_version(version).is_installed
+        self.install_button.setEnabled(not installed)
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -40,23 +70,55 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.search_text = QtWidgets.QLabel("")
 
+        self.list_button = QtWidgets.QPushButton("List")
+        self.list_button.clicked.connect(self.list_packages)
+
+        # self.package_list = QtWidgets.QListWidget()
+
+        # todo move package_scroll_widget to own widget, package layout too.
+        # make it so we can just just clear and additems similar to list
         self.package_layout = QtWidgets.QVBoxLayout()
         self.package_scroll_area = QtWidgets.QScrollArea()
         self.package_scroll_area.setWidgetResizable(True)
         self.package_scroll_widget = QtWidgets.QWidget()
         self.package_scroll_widget.setLayout(self.package_layout)
+        # self.package_scroll_area.setWidget(self.package_scroll_widget)
         self.package_scroll_area.setWidget(self.package_scroll_widget)
+
+
+        # central_layout.addWidget(self.package_list)
+
 
         # Lay out the elements vertically
         central_widget = QtWidgets.QWidget()
         central_layout = QtWidgets.QVBoxLayout(central_widget)
+        central_layout.addWidget(self.list_button)
         central_layout.addWidget(self.search_field)
         central_layout.addWidget(self.search_text)
+
         central_layout.addWidget(self.package_scroll_area)
         self.setCentralWidget(central_widget)
 
+
+    def list_packages(self):
+        # Clear the package list
+        # self.package_list.clear()
+# 
+        # List all installed packages
+        packages = cmd.list(app="blender")  # todo remove need for app
+
+        # Add the installed packages to the list
+        # self.package_list.addItems(packages)
+
+        for package in packages:
+            package_widget = PackageWidget(package)
+            self.package_layout.addWidget(package_widget)
+
     def search_packages(self):
         # Clear the existing package widgets
+        
+        # self.package_list.clear()
+
         count = self.package_layout.count()
         print(count)
         for i in reversed(range(count)):
@@ -71,10 +133,13 @@ class MainWindow(QtWidgets.QMainWindow):
         input = self.search_field.text()
         self.search_text.setText(f"Searching for '{input}':")
         QtWidgets.QApplication.processEvents()
-        results = cmd.search(input)
-        self.search_text.setText(f"Found {len(results)} results for '{input}':")
-        for package in results:
-            package_widget = PackageWidget(package)
+        packages = cmd.search(input, app="blender")  # todo remove need for app
+        self.search_text.setText(f"Found {len(packages)} results for '{input}':")
+
+        # self.package_list.addItems(packages)
+
+        for packageMeta in packages:
+            package_widget = PackageWidget(packageMeta)
             self.package_layout.addWidget(package_widget)
         self.package_layout.addStretch()
 
