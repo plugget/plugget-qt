@@ -24,7 +24,7 @@ class PackageWidget(QtWidgets.QWidget):
         if self.package_meta.installed_package:
             version = self.package_meta.installed_package.version
         else:
-            version = NOT_INSTALLED
+            version = ""
         self.version_label = QtWidgets.QLabel(version)
 
         # dropdown with all versions
@@ -34,9 +34,14 @@ class PackageWidget(QtWidgets.QWidget):
         # connect
         self.version_dropdown.currentTextChanged.connect(self.version_changed)
 
-        self.install_button = QtWidgets.QPushButton("Install")
+        self.install_button = QtWidgets.QPushButton(INSTALL)
         self.install_button.clicked.connect(self.install_package)
-        self.version_changed(self.version_dropdown.currentText())  # init state
+
+        self.uninstall_button = QtWidgets.QPushButton(UNINSTALL)
+        self.uninstall_button.clicked.connect(self.uninstall_package)
+        # bold uninstall_button
+        self.uninstall_button.setStyleSheet("background-color: tomato;")
+
 
         # Lay out the elements horizontally
         layout = QtWidgets.QHBoxLayout(self)
@@ -44,7 +49,10 @@ class PackageWidget(QtWidgets.QWidget):
         layout.addWidget(self.version_label)
         layout.addWidget(self.version_dropdown)
         layout.addWidget(self.install_button)
+        layout.addWidget(self.uninstall_button)
+        self.setLayout(layout)
 
+        self.version_changed(self.version_dropdown.currentText())  # init state
         # todo
         # show version dropwon
         # show app
@@ -52,17 +60,18 @@ class PackageWidget(QtWidgets.QWidget):
 
     def install_package(self):
         cmd.install(self.package_meta.package_name)
+        # todo update UI
+
+    def uninstall_package(self):
+        self.package_meta.installed_package.uninstall()
+        # todo update UI
 
     def version_changed(self, version):
         # disable install button if version is installed
         installed = self.package_meta.get_version(version).is_installed
-        if installed:
-            self.install_button.setText(UNINSTALL)
-            self.install_button.setStyleSheet("background-color: red;")
-        else:
-            self.install_button.setText(INSTALL)
-            self.install_button.setStyleSheet("background-color: none;")
-
+        # hide
+        self.uninstall_button.setVisible(installed)
+        self.install_button.setVisible(not installed)
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -118,7 +127,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.package_list.addItems(packages)
 
         for package in packages:
-            package_widget = PackageWidget(package)
+            package_widget = PackageWidget(package, parent=self)
             self.package_layout.addWidget(package_widget)
 
     def search_packages(self):
