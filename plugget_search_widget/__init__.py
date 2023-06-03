@@ -71,7 +71,7 @@ class PackageWidget(QtWidgets.QWidget):
         installed = self.package_meta.get_version(version).is_installed
         # hide
         self.uninstall_button.setVisible(installed)
-        self.install_button.setVisible(not installed)
+        # self.install_button.setVisible(not installed)
 
 
 class MainWindow(QtWidgets.QMainWindow):
