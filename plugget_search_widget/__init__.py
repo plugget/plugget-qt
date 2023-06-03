@@ -59,7 +59,7 @@ class PackageWidget(QtWidgets.QWidget):
 
 
     def install_package(self):
-        cmd.install(self.package_meta.package_name)
+        cmd.install(self.package_meta.package_name, version=self.version_dropdown.currentText())
         # todo update UI
 
     def uninstall_package(self):
