@@ -3,4 +3,4 @@ a UI widget to search [plugget packages](https://github.com/hannesdelbeke/plugge
 
 used by [plugget-unreal](https://github.com/hannesdelbeke/plugget-unreal)
 
-<img width="286" alt="image" src="https://user-images.githubusercontent.com/3758308/230476782-f39c81c6-b863-4473-b69d-1e983cd772de.png">
+![image](https://github.com/hannesdelbeke/plugget-qt-search/assets/3758308/1f852c53-eb7b-47f4-b9e9-284deba7906a)
