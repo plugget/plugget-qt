@@ -5,3 +5,7 @@ a UI widget to search [plugget packages](https://github.com/hannesdelbeke/plugge
 - see [plugget](https://github.com/hannesdelbeke/plugget)
 
 ![image](https://github.com/hannesdelbeke/plugget-qt-search/assets/3758308/1f852c53-eb7b-47f4-b9e9-284deba7906a)
+
+### depenencies
+- `plugget` Python module. Either install as a module or use the quick start addon
+- `PySide2`
