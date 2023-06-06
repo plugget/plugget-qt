@@ -162,7 +162,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.package_layout.addWidget(package_widget)
         self.package_layout.addStretch()
 
-if __name__ == "__main__":
+
+def show():
     app = QtWidgets.QApplication.instance()
     
     exec = False
@@ -176,3 +177,8 @@ if __name__ == "__main__":
     if exec:
         app.exec_()
 
+    return window
+
+
+if __name__ == "__main__":
+    show()
