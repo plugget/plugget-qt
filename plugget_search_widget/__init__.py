@@ -3,6 +3,7 @@
 # site.addsitedir("C:\\Users\\hanne\\OneDrive\\Documents\\repos\\detect-app")
 
 import PySide2.QtWidgets as QtWidgets
+import PySide2.QtCore as QtCore
 import plugget.commands as cmd
 import logging
 
@@ -129,6 +130,8 @@ class MainWindow(QtWidgets.QMainWindow):
         for package in packages:
             package_widget = PackageWidget(package, parent=self)
             self.package_layout.addWidget(package_widget)
+
+        self.package_layout.addStretch()
 
     def search_packages(self):
         # Clear the existing package widgets
