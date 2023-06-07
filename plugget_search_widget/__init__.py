@@ -3,9 +3,7 @@
 # site.addsitedir("C:\\Users\\hanne\\OneDrive\\Documents\\repos\\detect-app")
 
 import PySide2.QtWidgets as QtWidgets
-import PySide2.QtCore as QtCore
 import plugget.commands as cmd
-import logging
 
 
 INSTALLED = "Installed"
@@ -13,72 +11,18 @@ INSTALL = "Install"
 NOT_INSTALLED = "Not installed"
 UNINSTALL = "Uninstall"
 
-
-class PackageWidget(QtWidgets.QWidget):
-    def __init__(self, packageMeta, parent=None):
-        super().__init__(parent)
-        self.package_meta = packageMeta
-
-        # Create the UI elements
-        self.name_label = QtWidgets.QLabel(self.package_meta.package_name)
-
-        if self.package_meta.installed_package:
-            version = self.package_meta.installed_package.version
-        else:
-            version = ""
-        self.version_label = QtWidgets.QLabel(version)
-
-        # dropdown with all versions
-        versions = self.package_meta.versions
-        self.version_dropdown = QtWidgets.QComboBox()
-        self.version_dropdown.addItems(versions)
-        # connect
-        self.version_dropdown.currentTextChanged.connect(self.version_changed)
-
-        self.install_button = QtWidgets.QPushButton(INSTALL)
-        self.install_button.clicked.connect(self.install_package)
-
-        self.uninstall_button = QtWidgets.QPushButton(UNINSTALL)
-        self.uninstall_button.clicked.connect(self.uninstall_package)
-        # bold uninstall_button
-        self.uninstall_button.setStyleSheet("background-color: tomato;")
-
-
-        # Lay out the elements horizontally
-        layout = QtWidgets.QHBoxLayout(self)
-        layout.addWidget(self.name_label)
-        layout.addWidget(self.version_label)
-        layout.addWidget(self.version_dropdown)
-        layout.addWidget(self.install_button)
-        layout.addWidget(self.uninstall_button)
-        self.setLayout(layout)
-
-        self.version_changed(self.version_dropdown.currentText())  # init state
-        # todo
-        # show version dropwon
-        # show app
-
-
-    def install_package(self):
-        cmd.install(self.package_meta.package_name, version=self.version_dropdown.currentText())
-        # todo update UI
-
-    def uninstall_package(self):
-        self.package_meta.installed_package.uninstall()
-        # todo update UI
-
-    def version_changed(self, version):
-        # disable install button if version is installed
-        installed = self.package_meta.get_version(version).is_installed
-        # hide
-        self.uninstall_button.setVisible(installed)
-        # self.install_button.setVisible(not installed)
+INDEX_INSTALLED = 1
+INDEX_UNINSTALL = 2
+INDEX_VERSIONS = 3
+INDEX_INSTALL = 4
 
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Package Manager")
+
+        self.current_packages = []
 
         # Create the UI elements
         self.search_field = QtWidgets.QLineEdit()
@@ -90,77 +34,100 @@ class MainWindow(QtWidgets.QMainWindow):
         self.list_button = QtWidgets.QPushButton("List")
         self.list_button.clicked.connect(self.list_packages)
 
-        # self.package_list = QtWidgets.QListWidget()
+        # Create the table widget and set its properties
+        self.package_list = QtWidgets.QTableWidget()
+        self.package_list.setColumnCount(5)
+        self.package_list.setHorizontalHeaderLabels(["Package Name", "installed", "uninstall", "versions", "Install"])
+        self.package_list.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.package_list.verticalHeader().setVisible(False)
+        self.package_list.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.package_list.cellDoubleClicked.connect(self.package_double_clicked)
 
-        # todo move package_scroll_widget to own widget, package layout too.
-        # make it so we can just just clear and additems similar to list
-        self.package_layout = QtWidgets.QVBoxLayout()
-        self.package_scroll_area = QtWidgets.QScrollArea()
-        self.package_scroll_area.setWidgetResizable(True)
-        self.package_scroll_widget = QtWidgets.QWidget()
-        self.package_scroll_widget.setLayout(self.package_layout)
-        # self.package_scroll_area.setWidget(self.package_scroll_widget)
-        self.package_scroll_area.setWidget(self.package_scroll_widget)
-
-
-        # central_layout.addWidget(self.package_list)
-
-
-        # Lay out the elements vertically
+        # Add the UI elements to the layout
         central_widget = QtWidgets.QWidget()
-        central_layout = QtWidgets.QVBoxLayout(central_widget)
-        central_layout.addWidget(self.list_button)
-        central_layout.addWidget(self.search_field)
-        central_layout.addWidget(self.search_text)
-
-        central_layout.addWidget(self.package_scroll_area)
+        layout = QtWidgets.QVBoxLayout(central_widget)
+        layout.addWidget(self.search_field)
+        layout.addWidget(self.search_text)
+        layout.addWidget(self.list_button)
+        layout.addWidget(self.package_list)
         self.setCentralWidget(central_widget)
 
+        self.list_packages()
 
-    def list_packages(self):
-        # Clear the package list
-        # self.package_list.clear()
-# 
-        # List all installed packages
-        packages = cmd.list(app="blender")  # todo remove need for app
+    def load_packages(self, packages):
 
-        # Add the installed packages to the list
-        # self.package_list.addItems(packages)
+        self.current_packages = packages
 
-        for package in packages:
-            package_widget = PackageWidget(package, parent=self)
-            self.package_layout.addWidget(package_widget)
+        # Clear the table widget
+        self.package_list.clearContents()
 
-        self.package_layout.addStretch()
+        # Get the list of available packages
+        # packages = cmd.search(self.search_field.text())
+
+        # Set the number of rows in the table widget
+        self.package_list.setRowCount(len(packages))
+
+        # Add each package to the table widget
+        for row, package_meta in enumerate(packages):
+            # package name
+            self.package_list.setItem(row, 0, QtWidgets.QTableWidgetItem(package_meta.package_name))
+            
+            # installed version
+            if package_meta.installed_package:
+                self.package_list.setItem(row, INDEX_INSTALLED, QtWidgets.QTableWidgetItem(package_meta.installed_package.version))
+
+            # uninstall button
+            if package_meta.installed_package:
+                uninstall_button = QtWidgets.QPushButton(UNINSTALL)
+                uninstall_button.clicked.connect(self.uninstall_package)
+                self.package_list.setCellWidget(row, INDEX_UNINSTALL, uninstall_button)
+                uninstall_button.setStyleSheet("background-color: tomato;color: black;")
+
+            # versions dropdown
+            versions = package_meta.versions
+            version_dropdown = QtWidgets.QComboBox()
+            version_dropdown.addItems(versions)
+            # version_dropdown.currentTextChanged.connect(self.version_changed)
+            self.package_list.setCellWidget(row, 3, version_dropdown)
+
+            # install button
+            install_button = QtWidgets.QPushButton(INSTALL)
+            install_button.clicked.connect(self.install_package)
+            self.package_list.setCellWidget(row, INDEX_INSTALL, install_button)
+
+
+    def install_package(self):
+        row = self.package_list.currentRow()
+        package_meta = self.current_packages[row]
+        version = self.package_list.cellWidget(row, INDEX_VERSIONS).currentText()
+        cmd.install(package_meta.package_name, version=version)
+        self.list_packages()
+
+    def uninstall_package(self):
+        row = self.package_list.currentRow()
+        package_meta = self.current_packages[row]
+        package_meta.installed_package.uninstall()
+        self.list_packages()
+
+
+    def package_double_clicked(self, row, column):
+        pass
+        # # Get the package metadata for the selected row
+        # package_meta = cmd.search(self.table_widget.item(row, 0).text())[0]
+
+        # # Create a package dialog and show it
+        # package_dialog = PackageDialog(package_meta)
+        # package_dialog.exec_()
 
     def search_packages(self):
-        # Clear the existing package widgets
-        
-        # self.package_list.clear()
+        self.search_text.setText(f"Search results for '{self.search_field.text()}':")
+        packages = cmd.search(self.search_field.text())
+        self.load_packages(packages)
 
-        count = self.package_layout.count()
-        print(count)
-        for i in reversed(range(count)):
-            widget = self.package_layout.itemAt(i).widget()
-            if widget:
-                widget.setParent(None)
-            else:
-                logging.warning(f"widget None, index {i}")
-        # todo this is a hack for second search, fix it
-
-        # Search for packages and create widgets for each result
-        input = self.search_field.text()
-        self.search_text.setText(f"Searching for '{input}':")
-        QtWidgets.QApplication.processEvents()
-        packages = cmd.search(input, app="blender")  # todo remove need for app
-        self.search_text.setText(f"Found {len(packages)} results for '{input}':")
-
-        # self.package_list.addItems(packages)
-
-        for packageMeta in packages:
-            package_widget = PackageWidget(packageMeta)
-            self.package_layout.addWidget(package_widget)
-        self.package_layout.addStretch()
+    def list_packages(self):
+        self.search_text.setText("Installed packages:")
+        packages = cmd.list(app="blender")  # todo remove need for app
+        self.load_packages(packages)
 
 
 def show():
