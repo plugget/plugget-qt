@@ -14,3 +14,8 @@ _Dark ui is not included, just add a qt stylesheet_
 
 If this tool is helpfull, you can ⭐ star it on the github page,
 just click the ⭐ star button in the top-right of this page.
+
+```python
+import plugget_qt
+w = plugget_qt.show()  # store reference in w, to prevent garbage collection
+```
