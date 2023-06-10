@@ -4,11 +4,11 @@ requires = ["setuptools", "setuptools-scm"]
 
 
 [tool.setuptools]
-packages = ["plugget_search_widget"]
+packages = ["plugget_qt"]
 
 
 [project]
-name = "plugget-search-widget"
+name = "plugget-qt"
 authors = [
     {name = "Hannes"},
 ]
@@ -39,5 +39,5 @@ version = "0.0.1"
 
 
 [project.urls]
-Homepage = "https://github.com/hannesdelbeke/plugget-qt-search"
-Documentation = "https://github.com/hannesdelbeke/plugget-qt-search"
+Homepage = "https://github.com/hannesdelbeke/plugget-qt"
+Documentation = "https://github.com/hannesdelbeke/plugget-qt"
