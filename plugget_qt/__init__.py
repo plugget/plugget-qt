@@ -137,7 +137,8 @@ def show():
     if not app:
         exec = True
         app = QtWidgets.QApplication()
-
+    
+    global window
     window = MainWindow()
     window.show()
 
