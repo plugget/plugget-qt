@@ -10,7 +10,7 @@ packages = ["plugget_qt"]
 [project]
 name = "plugget-qt"
 authors = [
-    {name = "Hannes"},
+    {name = "Hannes Delbeke"},
 ]
 description = "a qt widget to search for plugget packages"
 readme = "README.md"
@@ -32,12 +32,9 @@ version = "0.0.1"
 # [project.optional-dependencies]
 # pyside2 = ["PySide2"]
 
-
-
 #[project.scripts]
 #my-script = "my_package.module:function"
 
-
 [project.urls]
-Homepage = "https://github.com/hannesdelbeke/plugget-qt"
-Documentation = "https://github.com/hannesdelbeke/plugget-qt"
+Homepage = "https://github.com/plugget/plugget-qt"
+Documentation = "https://github.com/plugget/plugget-qt"
