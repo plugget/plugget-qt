@@ -13,6 +13,11 @@ w = plugget_qt.show()  # store reference in w, to prevent garbage collection
 ![image](https://github.com/plugget/plugget-qt-addon/assets/3758308/0752c140-5b26-452e-81ac-fc4e36ccdb23)<br>
 _Dark ui is not included, just add a qt stylesheet_
 
+### Install
+```
+python -m pip install plugget-qt
+```
+
 ### Dependencies
 - `plugget` Python module.
 - `PySide2`
