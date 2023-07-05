@@ -95,7 +95,17 @@ class MainWindow(QtWidgets.QMainWindow):
             install_button.clicked.connect(self.install_package)
             self.package_list.setCellWidget(row, INDEX_INSTALL, install_button)
 
+    # try except decorator
+    def try_except(self, func):
+        def wrapper(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                # qt popup to print msg
+                QtWidgets.QMessageBox.critical(self, "Error", str(e))
+        return wrapper
 
+    @try_except
     def install_package(self):
         row = self.package_list.currentRow()
         package_meta = self.current_packages[row]
@@ -103,6 +113,7 @@ class MainWindow(QtWidgets.QMainWindow):
         cmd.install(package_meta.package_name, version=version)
         self.list_packages()
 
+    @try_except
     def uninstall_package(self):
         row = self.package_list.currentRow()
         package_meta = self.current_packages[row]
@@ -132,7 +143,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 def show():
     app = QtWidgets.QApplication.instance()
-    
+
     exec = False
     if not app:
         exec = True
