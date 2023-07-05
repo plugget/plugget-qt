@@ -17,6 +17,8 @@ INDEX_VERSIONS = 3
 INDEX_INSTALL = 4
 
 
+# try except decorator
+
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
@@ -53,6 +55,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(central_widget)
 
         self.list_packages()
+
+    @staticmethod
+    def try_except(func):
+        def wrapper(self, *args, **kwargs):
+            try:
+                return func(self, *args, **kwargs)
+            except Exception as e:
+                # qt popup to print msg
+                QtWidgets.QMessageBox.critical(self, "Error", str(e))
+
+        return wrapper
 
     def load_packages(self, packages):
 
@@ -94,16 +107,6 @@ class MainWindow(QtWidgets.QMainWindow):
             install_button = QtWidgets.QPushButton(INSTALL)
             install_button.clicked.connect(self.install_package)
             self.package_list.setCellWidget(row, INDEX_INSTALL, install_button)
-
-    # try except decorator
-    def try_except(self, func):
-        def wrapper(*args, **kwargs):
-            try:
-                return func(*args, **kwargs)
-            except Exception as e:
-                # qt popup to print msg
-                QtWidgets.QMessageBox.critical(self, "Error", str(e))
-        return wrapper
 
     @try_except
     def install_package(self):
