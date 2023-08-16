@@ -62,7 +62,9 @@ class MainWindow(QtWidgets.QMainWindow):
             try:
                 return func(self, *args, **kwargs)
             except Exception as e:
-                # qt popup to print msg
+                import traceback
+                traceback.print_exc()
+
                 QtWidgets.QMessageBox.critical(self, "Error", str(e))
 
         return wrapper
