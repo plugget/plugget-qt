@@ -21,7 +21,7 @@ INDEX_INSTALL = 4
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
-        super().__init__()
+        super().__init__(objectName="plugget_qt_main_window")
         self.setWindowTitle("Package Manager")
 
         self.current_packages = []
