@@ -15,7 +15,7 @@ w = plugget_qt.show()  # store reference in w, to prevent garbage collection
 ``` 
 
 ![image](https://github.com/plugget/plugget-qt-addon/assets/3758308/0752c140-5b26-452e-81ac-fc4e36ccdb23)<br>
-_Dark ui is not included, just add a qt stylesheet_
+_Dark ui is not included, just add a qt stylesheet, e.g. [blender-qt-stylesheet](https://github.com/hannesdelbeke/blender-qt-stylesheet)_
 
 ### Installation
 (depending on the app, you might want to replace python for the app's python interpreter, and maybe also use `--target "install/path/to/folder" --no-user` to install your python package to a custom folder)
