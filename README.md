@@ -1,6 +1,6 @@
 # Plugget Qt [![PyPI](https://img.shields.io/pypi/v/plugget-qt)](https://pypi.org/project/plugget-qt/)
 
-Plugget Qt is a Qt a UI for [plugget](https://github.com/plugget/plugget).  
+Plugget Qt is a UI for [plugget](https://github.com/plugget/plugget).  
 Easily search, list & (un)install [plugget packages](https://github.com/plugget/plugget-pkgs).  
 
 ```python
