@@ -3,6 +3,7 @@
 Plugget Qt is a UI for [plugget](https://github.com/plugget/plugget).  
 Easily search, list & (un)install [plugget packages](https://github.com/plugget/plugget-pkgs).  
 
+To show the qt window:
 ```python
 import plugget_qt
 w = plugget_qt.show()  # store reference in w, to prevent garbage collection
