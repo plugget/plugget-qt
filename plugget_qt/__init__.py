@@ -138,7 +138,7 @@ class PluggetWidget(QtWidgets.QWidget):
     @try_except
     def list_packages(self):
         self.search_text.setText("Installed packages:")
-        packages = cmd.list(app="blender")  # todo remove need for app
+        packages = cmd.search(installed=True)  # todo remove need for app
         self.load_packages(packages)
 
 
