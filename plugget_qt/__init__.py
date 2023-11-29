@@ -114,7 +114,7 @@ class PluggetWidget(QtWidgets.QWidget):
         cmd.install(package_meta.package_name, version=version)
         self.list_packages()
 
-     @try_except
+    @try_except
     def uninstall_package(self, row):
         package_meta = self.current_packages[row]
         package_meta.installed_package.uninstall()
