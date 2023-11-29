@@ -2,7 +2,7 @@
 # site.addsitedir("C:\\Users\\hanne\\OneDrive\\Documents\\repos\\plugget")
 # site.addsitedir("C:\\Users\\hanne\\OneDrive\\Documents\\repos\\detect-app")
 
-import PySide2.QtWidgets as QtWidgets
+from qtpy import QtWidgets
 import plugget.commands as cmd
 
 
