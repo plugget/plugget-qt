@@ -17,9 +17,7 @@ INDEX_VERSIONS = 3
 INDEX_INSTALL = 4
 
 
-# try except decorator
-
-class MainWindow(QtWidgets.QMainWindow):
+class PluggetWidget(QtWidgets.QWidget):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(objectName="plugget_qt_main_window", parent=parent, *args, **kwargs)
         self.setWindowTitle("Package Manager")
@@ -46,16 +44,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.package_list.cellDoubleClicked.connect(self.package_double_clicked)
 
         # Add the UI elements to the layout
-        central_widget = QtWidgets.QWidget()
-        layout = QtWidgets.QVBoxLayout(central_widget)
+        layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.search_field)
         layout.addWidget(self.search_text)
         layout.addWidget(self.list_button)
         layout.addWidget(self.package_list)
-        self.setCentralWidget(central_widget)
+        self.setLayout(layout)
 
         self.list_packages()
-
+        
     @staticmethod
     def try_except(func):
         def wrapper(self, *args, **kwargs):
@@ -117,14 +114,13 @@ class MainWindow(QtWidgets.QMainWindow):
         version = self.package_list.cellWidget(row, INDEX_VERSIONS).currentText()
         cmd.install(package_meta.package_name, version=version)
         self.list_packages()
-
+        
     @try_except
     def uninstall_package(self):
         row = self.package_list.currentRow()
         package_meta = self.current_packages[row]
         package_meta.installed_package.uninstall()
         self.list_packages()
-
 
     def package_double_clicked(self, row, column):
         pass
@@ -134,21 +130,30 @@ class MainWindow(QtWidgets.QMainWindow):
         # # Create a package dialog and show it
         # package_dialog = PackageDialog(package_meta)
         # package_dialog.exec_()
-
+    
+    @try_except
     def search_packages(self):
         self.search_text.setText(f"Search results for '{self.search_field.text()}':")
         packages = cmd.search(self.search_field.text())
         self.load_packages(packages)
 
+    @try_except
     def list_packages(self):
         self.search_text.setText("Installed packages:")
         packages = cmd.list(app="blender")  # todo remove need for app
         self.load_packages(packages)
 
 
+class MainWindow(QtWidgets.QMainWindow):
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, **kwargs)
+        central_widget = PluggetWidget()
+        self.setCentralWidget(central_widget)
+
+
 def show():
     app = QtWidgets.QApplication.instance()
-
+    
     exec = False
     if not app:
         exec = True
