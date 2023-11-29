@@ -25,7 +25,7 @@ python -m pip install plugget-qt
 
 ### Dependencies
 - `plugget` Python module.
-- `PySide2`
+- `qtpy` Qt wrapper for PySide & PyQt
 
 
 
