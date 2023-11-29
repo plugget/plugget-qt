@@ -91,7 +91,7 @@ class PluggetWidget(QtWidgets.QWidget):
             # uninstall button
             if package_meta.installed_package:
                 uninstall_button = QtWidgets.QPushButton(UNINSTALL)
-                uninstall_button.clicked.connect(self.uninstall_package)
+                uninstall_button.clicked.connect(lambda r=row: self.uninstall_package(r))
                 self.package_list.setCellWidget(row, INDEX_UNINSTALL, uninstall_button)
                 uninstall_button.setStyleSheet("background-color: tomato;color: black;")
 
@@ -104,20 +104,18 @@ class PluggetWidget(QtWidgets.QWidget):
 
             # install button
             install_button = QtWidgets.QPushButton(INSTALL)
-            install_button.clicked.connect(self.install_package)
+            install_button.clicked.connect(lambda r=row: self.install_package(r))
             self.package_list.setCellWidget(row, INDEX_INSTALL, install_button)
 
     @try_except
-    def install_package(self):
-        row = self.package_list.currentRow()
+    def install_package(self, row):
         package_meta = self.current_packages[row]
         version = self.package_list.cellWidget(row, INDEX_VERSIONS).currentText()
         cmd.install(package_meta.package_name, version=version)
         self.list_packages()
-        
-    @try_except
-    def uninstall_package(self):
-        row = self.package_list.currentRow()
+
+     @try_except
+    def uninstall_package(self, row):
         package_meta = self.current_packages[row]
         package_meta.installed_package.uninstall()
         self.list_packages()
