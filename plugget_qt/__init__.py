@@ -20,8 +20,8 @@ INDEX_INSTALL = 4
 # try except decorator
 
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__(objectName="plugget_qt_main_window")
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(objectName="plugget_qt_main_window", parent=parent, *args, **kwargs)
         self.setWindowTitle("Package Manager")
 
         self.current_packages = []
