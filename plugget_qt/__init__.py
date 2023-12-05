@@ -144,7 +144,7 @@ class PluggetWidget(QtWidgets.QWidget):
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
-        super().__init__(args, **kwargs)
+        super().__init__(*args, **kwargs)
         central_widget = PluggetWidget()
         self.setCentralWidget(central_widget)
 
