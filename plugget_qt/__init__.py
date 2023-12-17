@@ -53,7 +53,6 @@ class PluggetWidget(QtWidgets.QWidget):
 
         self.list_packages()
         
-    @staticmethod
     def try_except(func):
         def wrapper(self, *args, **kwargs):
             try:
@@ -61,9 +60,7 @@ class PluggetWidget(QtWidgets.QWidget):
             except Exception as e:
                 import traceback
                 traceback.print_exc()
-
                 QtWidgets.QMessageBox.critical(self, "Error", str(e))
-
         return wrapper
 
     def load_packages(self, packages):
