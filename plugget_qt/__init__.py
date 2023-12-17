@@ -11,6 +11,9 @@ INSTALL = "Install"
 NOT_INSTALLED = "Not installed"
 UNINSTALL = "Uninstall"
 
+LABELS = ["Package Name", INSTALLED, UNINSTALL, "versions", INSTALL]
+
+INDEX_PACKAGE_NAME = 0
 INDEX_INSTALLED = 1
 INDEX_UNINSTALL = 2
 INDEX_VERSIONS = 3
@@ -36,8 +39,8 @@ class PluggetWidget(QtWidgets.QWidget):
 
         # Create the table widget and set its properties
         self.package_list = QtWidgets.QTableWidget()
-        self.package_list.setColumnCount(5)
-        self.package_list.setHorizontalHeaderLabels(["Package Name", "installed", "uninstall", "versions", "Install"])
+        self.package_list.setColumnCount(len(LABELS))
+        self.package_list.setHorizontalHeaderLabels(LABELS)
         self.package_list.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.package_list.verticalHeader().setVisible(False)
         self.package_list.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
@@ -79,7 +82,7 @@ class PluggetWidget(QtWidgets.QWidget):
         # Add each package to the table widget
         for row, package_meta in enumerate(packages):
             # package name
-            self.package_list.setItem(row, 0, QtWidgets.QTableWidgetItem(package_meta.package_name))
+            self.package_list.setItem(row, INDEX_PACKAGE_NAME, QtWidgets.QTableWidgetItem(package_meta.package_name))
             
             # installed version
             if package_meta.installed_package:
@@ -97,7 +100,7 @@ class PluggetWidget(QtWidgets.QWidget):
             version_dropdown = QtWidgets.QComboBox()
             version_dropdown.addItems(versions)
             # version_dropdown.currentTextChanged.connect(self.version_changed)
-            self.package_list.setCellWidget(row, 3, version_dropdown)
+            self.package_list.setCellWidget(row, INDEX_VERSIONS, version_dropdown)
 
             # install button
             install_button = QtWidgets.QPushButton(INSTALL)
@@ -120,7 +123,7 @@ class PluggetWidget(QtWidgets.QWidget):
     def package_double_clicked(self, row, column):
         pass
         # # Get the package metadata for the selected row
-        # package_meta = cmd.search(self.table_widget.item(row, 0).text())[0]
+        # package_meta = cmd.search(self.table_widget.item(row, INDEX_PACKAGE_NAME).text())[0]
 
         # # Create a package dialog and show it
         # package_dialog = PackageDialog(package_meta)
