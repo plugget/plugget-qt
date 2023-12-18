@@ -21,7 +21,7 @@ INDEX_INSTALL = 4
 
 
 class PluggetWidget(QtWidgets.QWidget):
-    def __init__(self, parent, *args, **kwargs):
+    def __init__(self, parent=None, *args, **kwargs):
         super().__init__(objectName="plugget_qt_main_window", parent=parent, *args, **kwargs)
         self.setWindowTitle("Package Manager")
 
