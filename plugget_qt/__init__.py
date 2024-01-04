@@ -232,17 +232,22 @@ class PluggetWidget(QtWidgets.QWidget):
         packages = cmd.packages_from_config_file(path=r"C:\Users\hanne\OneDrive\Documents\repos\plugget-qt-search\sample_config.txt")
         self.load_packages(packages)
 
+    def set_tab(self, index):
+        self.tab_widget.setCurrentIndex(index)
+
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         central_widget = PluggetWidget(parent=self)
         self.setCentralWidget(central_widget)
-        # set title
         self.setWindowTitle(central_widget.windowTitle())
 
+    def set_tab(self, index):
+        self.centralWidget().set_tab(index)
 
-def show():
+
+def show(tab_index=0):
     app = QtWidgets.QApplication.instance()
     
     exec = False
@@ -252,6 +257,7 @@ def show():
     
     global window
     window = MainWindow()
+    window.set_tab(tab_index)
     window.show()
 
     if exec:
