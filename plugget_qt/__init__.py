@@ -170,6 +170,8 @@ class PluggetWidget(QtWidgets.QWidget):
             version_dropdown.addItems(versions)
             # version_dropdown.currentTextChanged.connect(self.version_changed)
             self.package_list.setCellWidget(row, INDEX_VERSIONS, version_dropdown)
+            # set version to latest
+            version_dropdown.setCurrentText(package_meta.latest.version)
 
             # install button
             install_button = QtWidgets.QPushButton(INSTALL)
