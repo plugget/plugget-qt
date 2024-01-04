@@ -1,9 +1,11 @@
-# import site
-# site.addsitedir("C:\\Users\\hanne\\OneDrive\\Documents\\repos\\plugget")
-# site.addsitedir("C:\\Users\\hanne\\OneDrive\\Documents\\repos\\detect-app")
+# local hack for IDE
+import sys
+sys.path.append("C:\\Users\\hanne\\OneDrive\\Documents\\repos\\plugget")
+sys.path.append("C:\\Users\\hanne\\OneDrive\\Documents\\repos\\detect-app")
 
 from qtpy import QtWidgets
 import plugget.commands as cmd
+import logging
 
 
 INSTALLED = "Installed"
@@ -34,8 +36,8 @@ class PluggetWidget(QtWidgets.QWidget):
 
         self.search_text = QtWidgets.QLabel("")
 
-        self.list_button = QtWidgets.QPushButton("List")
-        self.list_button.clicked.connect(self.list_packages)
+        # self.list_button = QtWidgets.QPushButton("Refresh")
+        # self.list_button.clicked.connect(self.list_packages)
 
         # Create the table widget and set its properties
         self.package_list = QtWidgets.QTableWidget()
@@ -46,16 +48,82 @@ class PluggetWidget(QtWidgets.QWidget):
         self.package_list.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.package_list.cellDoubleClicked.connect(self.package_double_clicked)
 
-        # Add the UI elements to the layout
-        layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(self.search_field)
-        layout.addWidget(self.search_text)
-        layout.addWidget(self.list_button)
-        layout.addWidget(self.package_list)
-        self.setLayout(layout)
+        # Create the tab widget
+        self.tab_widget = QtWidgets.QTabWidget(parent=self)
 
-        self.list_packages()
-        
+        # Create the search widget and add UI elements
+        self.search_widget = QtWidgets.QWidget(parent=self)
+        search_layout = QtWidgets.QVBoxLayout()
+        search_layout.addWidget(self.search_field)
+        # search_layout.addWidget(self.search_text)
+        self.search_widget.setLayout(search_layout)
+
+        # Create the list widget and add UI elements
+        self.list_widget = QtWidgets.QWidget(parent=self)
+        list_layout = QtWidgets.QVBoxLayout()
+        # list_layout.addWidget(self.list_button)
+        self.list_widget.setLayout(list_layout)
+
+        # Create the list widget and add UI elements
+        self.toolbox_widget = QtWidgets.QWidget(parent=self)
+        list_layout = QtWidgets.QVBoxLayout()
+        # list_layout.addWidget(self.package_list)
+        self.toolbox_widget.setLayout(list_layout)
+
+        # Add the search and list widgets to the tab widget
+        self.tab_widget.addTab(self.search_widget, "Search")
+        self.tab_widget.addTab(self.list_widget, "Installed")
+        self.tab_widget.addTab(self.toolbox_widget, "Preset")
+        self.tab_widget.setTabToolTip(0, "Search for packages")
+        self.tab_widget.setTabToolTip(1, "List installed packages")
+        self.tab_widget.setTabToolTip(2, "Selected packages from a config")
+
+        # Add the tab widget to the main layout
+        layout = QtWidgets.QVBoxLayout()
+        self.setLayout(layout)
+        layout.addWidget(self.tab_widget)
+        layout.addWidget(self.package_list)
+
+        # when i go to select tab, run self.list_packages
+        self.tab_widget.currentChanged.connect(self.tab_logic)
+
+        # # tab widget should take up least space possible
+        # self.tab_widget.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        # self.search_widget.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        # self.list_widget.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        # self.toolbox_widget.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        # # package list should take up all space possible
+        # self.package_list.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+
+        # # Add the UI elements to the layout
+        # layout = QtWidgets.QVBoxLayout()
+        # layout.addWidget(self.search_field)
+        # layout.addWidget(self.search_text)
+        # layout.addWidget(self.list_button)
+        # layout.addWidget(self.package_list)
+        # self.setLayout(layout)
+
+        # self.list_packages()
+        # set tab to list
+        self.tab_widget.setCurrentIndex(1)
+
+    def tab_logic(self):
+        # if tab is select, run self.list_packages
+
+        # clear package list
+        self.package_list.clearContents()
+        self.package_list.setRowCount(0)
+
+        if self.tab_widget.currentIndex() == 0:
+            self.search_packages(use_cache=True)
+            # todo load previous search results
+            pass
+        elif self.tab_widget.currentIndex() == 1:
+            self.list_packages()
+        elif self.tab_widget.currentIndex() == 2:
+            self.list_config_packages()
+
+
     def try_except(func):
         def wrapper(self, *args, **kwargs):
             try:
@@ -66,7 +134,8 @@ class PluggetWidget(QtWidgets.QWidget):
                 QtWidgets.QMessageBox.critical(self, "Error", str(e))
         return wrapper
 
-    def load_packages(self, packages):
+    def load_packages(self, packages: "list[cmd.PackagesMeta]"):
+        print("load packages", packages)
 
         self.current_packages = packages
 
@@ -83,7 +152,7 @@ class PluggetWidget(QtWidgets.QWidget):
         for row, package_meta in enumerate(packages):
             # package name
             self.package_list.setItem(row, INDEX_PACKAGE_NAME, QtWidgets.QTableWidgetItem(package_meta.package_name))
-            
+
             # installed version
             if package_meta.installed_package:
                 self.package_list.setItem(row, INDEX_INSTALLED, QtWidgets.QTableWidgetItem(package_meta.installed_package.version))
@@ -128,17 +197,37 @@ class PluggetWidget(QtWidgets.QWidget):
         # # Create a package dialog and show it
         # package_dialog = PackageDialog(package_meta)
         # package_dialog.exec_()
-    
+
+    def _get_app(self):
+        app = cmd._detect_app_id()
+        if not app:
+            logging.warning("could not detect app, will list all packages")
+            app = "all"
+        return app
+
     @try_except
-    def search_packages(self):
-        self.search_text.setText(f"Search results for '{self.search_field.text()}':")
-        packages = cmd.search(self.search_field.text())
+    def search_packages(self, use_cache=False):
+        # self.search_text.setText(f"Search results for '{self.search_field.text()}':")
+        app = self._get_app()
+        packages = cmd.search(self.search_field.text(), use_cache=use_cache, app=app)
         self.load_packages(packages)
 
     @try_except
     def list_packages(self):
-        self.search_text.setText("Installed packages:")
-        packages = cmd.search(installed=True)  # todo remove need for app
+        """list installed packages"""
+        # self.search_text.setText("Installed packages:")
+        app = self._get_app()
+        packages = cmd.search(installed=True, app=app)  # todo remove need for app
+        self.load_packages(packages)
+
+    @try_except
+    def list_config_packages(self):
+        """list packages from a config file"""
+        #todo
+        # if not found, show a red warning or something.
+
+        # self.search_text.setText("Installed packages:")
+        packages = cmd.packages_from_config_file(path=r"C:\Users\hanne\OneDrive\Documents\repos\plugget-qt-search\sample_config.txt")
         self.load_packages(packages)
 
 
@@ -147,6 +236,8 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__(*args, **kwargs)
         central_widget = PluggetWidget(parent=self)
         self.setCentralWidget(central_widget)
+        # set title
+        self.setWindowTitle(central_widget.windowTitle())
 
 
 def show():
