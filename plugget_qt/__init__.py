@@ -235,6 +235,9 @@ class PluggetWidget(QtWidgets.QWidget):
     def set_tab(self, index):
         self.tab_widget.setCurrentIndex(index)
 
+    def hide_tabs(self, hide_tabs=False):
+        self.tab_widget.setVisible(not hide_tabs)
+
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
@@ -246,8 +249,11 @@ class MainWindow(QtWidgets.QMainWindow):
     def set_tab(self, index):
         self.centralWidget().set_tab(index)
 
+    def hide_tabs(self, hide_tabs=False):
+        self.centralWidget().hide_tabs(hide_tabs)
 
-def show(tab_index=0):
+
+def show(tab_index=0, hide_tabs=False):
     app = QtWidgets.QApplication.instance()
     
     exec = False
@@ -258,6 +264,7 @@ def show(tab_index=0):
     global window
     window = MainWindow()
     window.set_tab(tab_index)
+    window.hide_tabs(hide_tabs)
     window.show()
 
     if exec:
