@@ -1,12 +1,27 @@
 # local hack for IDE
 import sys
-sys.path.append("C:\\Users\\hanne\\OneDrive\\Documents\\repos\\plugget")
-sys.path.append("C:\\Users\\hanne\\OneDrive\\Documents\\repos\\detect-app")
+# sys.path.append("C:\\Users\\hanne\\OneDrive\\Documents\\repos\\plugget")
+# sys.path.append("C:\\Users\\hanne\\OneDrive\\Documents\\repos\\detect-app")
 
-from qtpy import QtWidgets
+try:
+    from contextlib import suppress
+    QtWidgets = None
+    with suppress(ImportError):
+        import PySide6.QtWidgets as QtWidgets
+    with suppress(ImportError):
+        import PyQt6.QtWidgets as QtWidgets
+except:
+    try:
+        import PyQt5.QtWidgets as QtWidgets
+    except ImportError:
+        pass
+    try:
+        import PySide2.QtWidgets as QtWidgets
+    except ImportError:
+        import qtpy.QtWidgets as QtWidgets
+
 import plugget.commands as cmd
 import logging
-
 
 INSTALLED = "Installed"
 INSTALL = "Install"
@@ -123,7 +138,6 @@ class PluggetWidget(QtWidgets.QWidget):
         elif self.tab_widget.currentIndex() == 2:
             self.list_config_packages()
 
-
     def try_except(func):
         def wrapper(self, *args, **kwargs):
             try:
@@ -132,6 +146,7 @@ class PluggetWidget(QtWidgets.QWidget):
                 import traceback
                 traceback.print_exc()
                 QtWidgets.QMessageBox.critical(self, "Error", str(e))
+
         return wrapper
 
     def load_packages(self, packages: "list[cmd.PackagesMeta]"):
@@ -255,12 +270,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
 def show(tab_index=0, hide_tabs=False):
     app = QtWidgets.QApplication.instance()
-    
+
     exec = False
     if not app:
         exec = True
         app = QtWidgets.QApplication()
-    
+
     global window
     window = MainWindow()
     window.set_tab(tab_index)

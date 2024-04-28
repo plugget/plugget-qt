@@ -23,7 +23,6 @@ classifiers = [
 dependencies = [
     'importlib-metadata; python_version<"3.4"',
     'plugget',
-    'qtpy',
 ]
 
 # dynamic = ["version"]
