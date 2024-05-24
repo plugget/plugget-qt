@@ -1,7 +1,7 @@
 # local hack for IDE
 import sys
-# sys.path.append("C:\\Users\\hanne\\OneDrive\\Documents\\repos\\plugget")
-# sys.path.append("C:\\Users\\hanne\\OneDrive\\Documents\\repos\\detect-app")
+sys.path.append("D:\\repos\\plugget")
+sys.path.append("D:\\repos\\detect-app")
 
 try:
     from contextlib import suppress
