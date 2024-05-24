@@ -127,6 +127,9 @@ class PluggetWidget(QtWidgets.QWidget):
         # set tab to list
         self.tab_widget.setCurrentIndex(1)
 
+        self.package_list.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.package_list.customContextMenuRequested.connect(self.context_menu)
+
     def tab_logic(self):
         # if tab is select, run self.list_packages
 
@@ -204,19 +207,25 @@ class PluggetWidget(QtWidgets.QWidget):
             # todo instead of context menu on every single item
             #  use context menu on the whole table, and get the row from the click position
             self.package_list.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+    def context_menu(self, pos):
+        item = self.package_list.itemAt(pos)
+        if item is None:
+            return
 
-            self.package_list.customContextMenuRequested.connect(lambda pos, r=row: self.context_menu(pos, package_meta.actions))
+        row = item.row()
+        package_meta = self.current_packages[row]
+        actions = package_meta.actions
 
-    def context_menu(self, pos, actions):
         menu = QtWidgets.QMenu()
 
         if not actions:
             actions = [{"label": "No actions available", "command": "print('no commands')"}]
+
         for action in actions:
             label = action["label"]
             command = action["command"]
-            action = menu.addAction(label)
-            action.triggered.connect(lambda: exec(command))
+            action_item = menu.addAction(label)
+            action_item.triggered.connect(lambda _, cmd=command: exec(cmd))
 
         menu.exec_(self.package_list.viewport().mapToGlobal(pos))
 
