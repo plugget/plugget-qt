@@ -225,7 +225,16 @@ class PluggetWidget(QtWidgets.QWidget):
             label = action["label"]
             command = action["command"]
             action_item = menu.addAction(label)
-            action_item.triggered.connect(lambda _, cmd=command: exec(cmd))
+
+            def execute_command(cmd=command):
+                if isinstance(cmd, str):
+                    exec(cmd)
+                elif callable(cmd):
+                    cmd()
+                else:
+                    raise ValueError(f"Unsupported command type: {type(cmd)}")
+
+            action_item.triggered.connect(lambda _, cmd=command: execute_command(cmd))
 
         menu.exec_(self.package_list.viewport().mapToGlobal(pos))
 
