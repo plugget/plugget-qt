@@ -8,17 +8,22 @@ try:
     QtWidgets = None
     with suppress(ImportError):
         import PySide6.QtWidgets as QtWidgets
+        import PySide6.QtCore as QtCore
     with suppress(ImportError):
         import PyQt6.QtWidgets as QtWidgets
+        import PyQt6.QtCore as QtCore
 except:
     try:
         import PyQt5.QtWidgets as QtWidgets
+        import PyQt5.QtCore as QtCore
     except ImportError:
         pass
     try:
         import PySide2.QtWidgets as QtWidgets
+        import PySide2.QtCore as QtCore
     except ImportError:
         import qtpy.QtWidgets as QtWidgets
+        import qtpy.QtCore as QtCore
 
 import plugget.commands as cmd
 import logging
@@ -192,6 +197,28 @@ class PluggetWidget(QtWidgets.QWidget):
             install_button = QtWidgets.QPushButton(INSTALL)
             install_button.clicked.connect(lambda _=None, r=row: self.install_package(r))
             self.package_list.setCellWidget(row, INDEX_INSTALL, install_button)
+
+            # add actions context menu to right click on package name
+            # each package has package.actions, which is a list of dicts.
+            # the format is {"label": "a label", "command": "python string command"}
+            # todo instead of context menu on every single item
+            #  use context menu on the whole table, and get the row from the click position
+            self.package_list.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+
+            self.package_list.customContextMenuRequested.connect(lambda pos, r=row: self.context_menu(pos, package_meta.actions))
+
+    def context_menu(self, pos, actions):
+        menu = QtWidgets.QMenu()
+
+        if not actions:
+            actions = [{"label": "No actions available", "command": "print('no commands')"}]
+        for action in actions:
+            label = action["label"]
+            command = action["command"]
+            action = menu.addAction(label)
+            action.triggered.connect(lambda: exec(command))
+
+        menu.exec_(self.package_list.viewport().mapToGlobal(pos))
 
     @try_except
     def install_package(self, row):
