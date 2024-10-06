@@ -27,7 +27,7 @@ dependencies = [
 ]
 
 # dynamic = ["version"]
-version = "0.0.7"
+version = "0.0.8"
 
 # [project.optional-dependencies]
 # pyside2 = ["PySide2"]
