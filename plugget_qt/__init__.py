@@ -237,7 +237,7 @@ class PluggetWidget(QtWidgets.QWidget):
                 else:
                     raise ValueError(f"Unsupported command type: {type(cmd)}")
 
-            action_item.triggered.connect(lambda _, cmd=command: execute_command(cmd))
+            action_item.triggered.connect(lambda _=None, cmd=command: execute_command(cmd))
 
         menu.exec_(self.package_list.viewport().mapToGlobal(pos))
 
