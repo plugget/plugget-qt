@@ -104,6 +104,9 @@ class PluggetWidget(QtWidgets.QWidget):
         layout.addWidget(self.tab_widget)
         layout.addWidget(self.package_list)
 
+        # set scaling to keep self.tab_widget as small as possible
+        self.tab_widget.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+
         # when i go to select tab, run self.list_packages
         self.tab_widget.currentChanged.connect(self.tab_logic)
 
