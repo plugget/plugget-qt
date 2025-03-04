@@ -98,6 +98,9 @@ class PluggetWidget(QtWidgets.QWidget):
         self.tab_widget.setTabToolTip(1, "List installed packages")
         self.tab_widget.setTabToolTip(2, "Selected packages from a config")
 
+        # disable preset tab
+        self.tab_widget.setTabEnabled(2, False)
+
         # Add the tab widget to the main layout
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
